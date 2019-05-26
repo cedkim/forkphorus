@@ -1366,42 +1366,65 @@ var P;
                 return data[3] !== 0;
             }
             spritesIntersect(spriteA, otherSprites) {
+                const aData = spriteA.costumes[spriteA.currentCostumeIndex].imageData();
+                const aBounds = spriteA.rotatedBounds();
                 for (var i = 0; i < otherSprites.length; i++) {
                     const spriteB = otherSprites[i];
                     if (!spriteB.visible)
                         continue;
-                    const mb = spriteA.rotatedBounds();
-                    const ob = spriteB.rotatedBounds();
-                    if (mb.bottom >= ob.top || ob.bottom >= mb.top || mb.left >= ob.right || ob.left >= mb.right) {
+                    const bData = spriteB.costumes[spriteB.currentCostumeIndex].imageData();
+                    const bBounds = spriteB.rotatedBounds();
+                    if (bBounds.bottom >= aBounds.top || aBounds.bottom >= bBounds.top || bBounds.left >= aBounds.right || aBounds.left >= bBounds.right) {
                         continue;
                     }
-                    const left = Math.max(mb.left, ob.left);
-                    const top = Math.min(mb.top, ob.top);
-                    const right = Math.min(mb.right, ob.right);
-                    const bottom = Math.max(mb.bottom, ob.bottom);
-                    const width = right - left;
-                    const height = top - bottom;
-                    if (width < 1 || height < 1) {
-                        return false;
-                    }
-                    workingRenderer.canvas.width = width;
-                    workingRenderer.canvas.height = height;
-                    workingRenderer.ctx.save();
-                    workingRenderer.noEffects = true;
-                    workingRenderer.ctx.translate(-(left + 240), -(180 - top));
-                    workingRenderer.drawChild(spriteA);
-                    workingRenderer.ctx.globalCompositeOperation = 'source-in';
-                    workingRenderer.drawChild(spriteB);
-                    workingRenderer.noEffects = false;
-                    workingRenderer.ctx.restore();
-                    const data = workingRenderer.ctx.getImageData(0, 0, width, height).data;
-                    const length = data.length;
-                    for (var j = 0; j < length; j += 4) {
-                        // check for the opacity byte being a non-zero number
-                        if (data[j + 3]) {
-                            return true;
+                    const left = Math.max(aBounds.left, bBounds.left);
+                    const top = Math.min(aBounds.top, bBounds.top);
+                    const right = Math.min(aBounds.right, bBounds.right);
+                    const bottom = Math.max(aBounds.bottom, bBounds.bottom);
+                    for (var x = left; x < right; x++) {
+                        const ax = x - aBounds.left;
+                        const bx = x - bBounds.left;
+                        for (var y = bottom; y < top; y++) {
+                            const ay = aBounds.top - y;
+                            const by = bBounds.top - y;
+                            const ap = Math.floor(ay * aData.width + ax);
+                            const bp = Math.floor(by * bData.width + bx);
+                            if (aData.data[Math.floor(ap * 4 - 1)]) {
+                                return true;
+                            }
+                            if (bData.data[Math.floor(bp * 4 - 1)]) {
+                                return true;
+                            }
                         }
                     }
+                    // const mb = spriteA.rotatedBounds();
+                    // const ob = spriteB.rotatedBounds();
+                    // if (mb.bottom >= ob.top || ob.bottom >= mb.top || mb.left >= ob.right || ob.left >= mb.right) {
+                    //   continue;
+                    // }
+                    // const width = right - left;
+                    // const height = top - bottom;
+                    // if (width < 1 || height < 1) {
+                    //   return false;
+                    // }
+                    // workingRenderer.canvas.width = width;
+                    // workingRenderer.canvas.height = height;
+                    // workingRenderer.ctx.save();
+                    // workingRenderer.noEffects = true;
+                    // workingRenderer.ctx.translate(-(left + 240), -(180 - top));
+                    // workingRenderer.drawChild(spriteA);
+                    // workingRenderer.ctx.globalCompositeOperation = 'source-in';
+                    // workingRenderer.drawChild(spriteB);
+                    // workingRenderer.noEffects = false;
+                    // workingRenderer.ctx.restore();
+                    // const data = workingRenderer.ctx.getImageData(0, 0, width, height).data;
+                    // const length = data.length;
+                    // for (var j = 0; j < length; j += 4) {
+                    //   // check for the opacity byte being a non-zero number
+                    //   if (data[j + 3]) {
+                    //     return true;
+                    //   }
+                    // }
                 }
                 return false;
             }
@@ -2680,6 +2703,7 @@ var P;
         // A costume
         class Costume {
             constructor(costumeData) {
+                this._imageData = null;
                 this.index = costumeData.index;
                 this.bitmapResolution = costumeData.bitmapResolution;
                 this.scale = 1 / this.bitmapResolution;
@@ -2709,6 +2733,15 @@ var P;
                 ctx.drawImage(this.image, 0, 0);
                 this._context = ctx;
                 return ctx;
+            }
+            imageData() {
+                if (this._imageData) {
+                    return this._imageData;
+                }
+                const context = this.context();
+                const data = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+                this._imageData = data;
+                return data;
             }
         }
         core.Costume = Costume;

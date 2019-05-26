@@ -1425,6 +1425,7 @@ namespace P.core {
     public scale: number;
 
     protected _context: CanvasRenderingContext2D | null;
+    protected _imageData: ImageData | null = null;
     
     constructor(costumeData: CostumeOptions) {
       this.index = costumeData.index;
@@ -1459,6 +1460,17 @@ namespace P.core {
       ctx.drawImage(this.image, 0, 0);
       this._context = ctx;
       return ctx;
+    }
+
+    imageData(): ImageData {
+      if (this._imageData) {
+        return this._imageData;
+      }
+
+      const context = this.context();
+      const data = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+      this._imageData = data;
+      return data;
     }
   }
 
