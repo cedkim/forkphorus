@@ -1003,21 +1003,11 @@ namespace P.renderer {
             const ap = Math.floor(ay * aData.width + ax);
             const bp = Math.floor(by * bData.width + bx);
 
-            if (aData.data[Math.floor(ap * 4 - 1)]) {
-              return true;
-            }
-            if (bData.data[Math.floor(bp * 4 - 1)]) {
+            if (aData.data[Math.floor(ap * 4 - 1)] && bData.data[Math.floor(bp * 4 - 1)]) {
               return true;
             }
           }
         }
-
-        // const mb = spriteA.rotatedBounds();
-        // const ob = spriteB.rotatedBounds();
-
-        // if (mb.bottom >= ob.top || ob.bottom >= mb.top || mb.left >= ob.right || ob.left >= mb.right) {
-        //   continue;
-        // }
 
         // const width = right - left;
         // const height = top - bottom;
