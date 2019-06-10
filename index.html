@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset=utf-8>
-  <meta name=viewport content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Forkphorus is a JavaScript compiler for Scratch 2 and Scratch 3 projects.">
   <title>forkphorus</title>
-  <link rel=stylesheet href=phosphorus.css>
-  <link rel=stylesheet href=player.css>
-  <link rel=stylesheet href=index.css>
+  <link rel="stylesheet" href="phosphorus.css">
+  <link rel="stylesheet" href="player.css">
+  <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
@@ -37,7 +38,7 @@
 
     <div class=area id=title-area>
       <h1 class=title>forkphorus</h1>
-      <p>forkphorus runs Scratch 2 and 3 projects really fast by compiling them to JavaScript. Try it out by pasting a project ID or URL into the field below, by <a class="upload-button">selecting<input id="upload-file-input" type="file" autocomplete="off" accept=".sb2,.sb3"></a> or dropping a project file on the page, or by <a class=dropdown>choosing an example<select id=examples>
+      <p>forkphorus runs Scratch 3 and 2 projects really fast by compiling them to JavaScript. Try it out by pasting a project ID or URL into the field below, by <a class="upload-button">selecting<input id="upload-file-input" type="file" autocomplete="off" accept=".sb2,.sb3"></a> or dropping a project file on the page, or by <a class=dropdown>choosing an example<select id=examples>
         <option value></option>
         <option value=276660763>Scratch 3.0 is here! by ScratchCat</option>
         <option value=280227362>Spring Physics by HowToLogic</option>
@@ -65,20 +66,20 @@
     </div>
 
     <div class=internal-error>
-      An internal error occurred. <a id=error-bug-link target=_blank href=https://github.com/forkphorus/forkphorus/issues/new>Click here</a> to file a bug report.
+      An internal error occurred. <a id="error-bug-link" target="_blank" href="https://github.com/forkphorus/forkphorus/issues/new" rel="noopener">Click here</a> to file a bug report.
     </div>
 
     <div class="title">
       <div class="progress-bar"></div>
       <input class="url" value="https://scratch.mit.edu/projects/" spellcheck="false">
-      <a target="_blank" class=project-link title="View project on Scratch"></a>
+      <a target="_blank" class=project-link title="View project on Scratch" rel="noopener"></a>
     </div>
 
     <div class=area id=project-area>
 
       <section>
         <h1>Report a problem</h1>
-        <p>forkphorus is still in development and has many bugs. <a id=bug-link target=_blank href=https://github.com/forkphorus/forkphorus/issues/new>Click here</a> to report a problem with this project.</p>
+        <p>forkphorus is still in development and has many bugs. <a id="bug-link" target="_blank" rel="noopener" href="https://github.com/forkphorus/forkphorus/issues/new">Click here</a> to report a problem with this project.</p>
       </section>
 
       <section class=package>
@@ -115,8 +116,8 @@
         </tr>
         <tr>
           <td class="name" title="The value of the &quot;username&quot; block. Changing this may cause issues in some projects."><label for="settings-username">Username</label></td>
-          <!-- scratch's real username limit is 30, but we'll just raise it up a bit -->
-          <td class="value"><input id="settings-username" value="" type="text" placeholder="(empty string)" maxlength="300"></td>
+          <!-- scratch has some restrictions on usernames that we don't care about -->
+          <td class="value"><input id="settings-username" value="" type="text" placeholder="(nothing)"></td>
         </tr>
       </table>
       <p>Changes are applied automatically.</p>
@@ -124,10 +125,13 @@
     
     <section>
       <h1>Credits</h1>
-      <p>forkphorus is a fork of <a href="https://phosphorus.github.io/">phosphorus</a> by <a href="https://github.com/nathan">Nathan</a>. Its CPS-style compilation and overall design was inspired by <a href="https://github.com/RHY3756547">Rhys</a>'s <a href="https://code.google.com/p/sb2-js/">sb2.js</a>. It would have more bugs if not for <a href="https://github.com/trumank">Truman</a> and <a href="https://github.com/tjvr">Tim</a>. It uses the <a href="https://stuk.github.io/jszip/">JSZip</a> library, created by <a href="https://github.com/stuk">Stuart Knightley</a>, <a href="https://github.com/dduponchel">David Duponchel</a>, Franz Buchinger, and <a href="https://github.com/aadsm">António Afonso</a>, to read <code>.sb2</code> and <code>.sb3</code> files, and the <a href="https://github.com/canvg/canvg">canvg</a> library to render SVGs in <code>&lt;canvas&gt;</code> elements.</p>
+      <p>forkphorus is a fork of <a href="https://phosphorus.github.io/">phosphorus</a> by <a href="https://github.com/nathan">Nathan</a>. Its CPS-style compilation and overall design was inspired by <a href="https://github.com/RHY3756547">Rhys</a>'s <a href="https://code.google.com/p/sb2-js/">sb2.js</a>. It would have more bugs if not for <a href="https://github.com/trumank">Truman</a> and <a href="https://github.com/tjvr">Tim</a>. The <a href="https://stuk.github.io/jszip/">JSZip</a> library is used to read <code>.sb2</code> and <code>.sb3</code> files, and the <a href="https://github.com/canvg/canvg">canvg</a> library to render SVGs in <code>&lt;canvas&gt;</code> elements.</p>
 
       <h1>Code</h1>
-      <p>The source code for forkphorus is available <a href=https://github.com/forkphorus/forkphorus>on GitHub</a>.</p>
+      <p>The source code for forkphorus is available <a href=https://github.com/forkphorus/forkphorus>on GitHub</a> along with a <a href="https://github.com/forkphorus/forkphorus/blob/master/changelog.md">changelog</a>.</p>
+
+      <!-- the deploy bot for forkphorus.github.io will replace this next line with the version info -->
+      <!-- __deploybotinfosection__ -->
     </section>
   </div>
 

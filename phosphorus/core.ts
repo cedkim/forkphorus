@@ -442,13 +442,6 @@ namespace P.core {
     }
 
     /**
-     * Determines the value of a variable from its name.
-     * Please use .vars instead for most use cases.
-     * @param name The name of the variable, as displayed in the Scratch interface.
-     */
-    abstract lookupVariable(name: string): any;
-
-    /**
      * Gets the rectangular bounds that contain this sprite in its entirety.
      */
     abstract rotatedBounds(): RotatedBounds;
@@ -486,7 +479,6 @@ namespace P.core {
     public tempoBPM: number = 60;
 
     public zoom: number = 1;
-    public maxZoom: number = P.config.scale;
 
     public keys: KeyList;
 
@@ -773,10 +765,7 @@ namespace P.core {
      */
     setZoom(zoom: number) {
       if (this.zoom === zoom) return;
-      if (this.maxZoom < zoom * P.config.scale) {
-        this.maxZoom = zoom * P.config.scale;
-        this.renderer.penResize(this.maxZoom);
-      }
+      this.renderer.penResize(zoom);
       this.root.style.width = (480 * zoom | 0) + 'px';
       this.root.style.height = (360 * zoom | 0) + 'px';
       this.root.style.fontSize = (zoom*10) + 'px';
@@ -1426,7 +1415,7 @@ namespace P.core {
 
     protected _context: CanvasRenderingContext2D | null;
     protected _imageData: ImageData | null = null;
-    
+
     constructor(costumeData: CostumeOptions) {
       this.index = costumeData.index;
       this.bitmapResolution = costumeData.bitmapResolution;

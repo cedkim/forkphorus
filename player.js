@@ -167,29 +167,34 @@ P.player = (function() {
     P.player.projectId = id;
     P.player.projectURL = id ? 'https://scratch.mit.edu/projects/' + id + '/' : '';
 
-    return P.IO.fetchRemote(P.config.PROJECT_API.replace('$id', id))
-      .then((req) => req.json())
+    return new P.IO.JSONRequest(P.config.PROJECT_API.replace('$id', id)).load()
       .then((json) => {
         const type = P.utils.projectType(json);
         if (type === 3) {
           return (new P.sb3.Scratch3Loader(json)).load();
         } else if (type === 2) {
           return P.sb2.loadProject(json);
+        } else {
+          throw new Error('Unknown project type (only Scratch 2 and 3 projects are supported)');
         }
       })
       .catch((e) => showError(e));
   }
 
   function start(s, triggerGreenFlag) {
+    if (!s) {
+      throw new Error('no stage');
+    }
     stage = P.player.stage = s;
     player.appendChild(s.root);
-    s.setZoom(stage.zoom);
+    stage.setZoom(stage.zoom);
+    stage.focus();
     stage.root.addEventListener('keydown', exitFullScreen);
     stage.runtime.handleError = showError;
-    s.runtime.start();
+    stage.runtime.start();
     hideProgress();
     if (triggerGreenFlag) {
-      s.runtime.triggerGreenFlag();
+      stage.runtime.triggerGreenFlag();
     }
   }
 

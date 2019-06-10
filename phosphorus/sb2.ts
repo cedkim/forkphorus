@@ -667,8 +667,7 @@ namespace P.sb2 {
         return f!.async('text')
           .then((text) => loadSVG(text));
       } else {
-        return P.IO.fetchRemote(ASSET_URL + hash + '/get/')
-          .then((request) => request.text())
+        return new P.IO.TextRequest(ASSET_URL + hash + '/get/').load()
           .then((text) => loadSVG(text));
       }
     } else if (ext === 'wav') {
@@ -676,8 +675,7 @@ namespace P.sb2 {
         return f!.async('arrayBuffer')
           .then((buffer) => P.audio.decodeAudio(buffer));
       } else {
-        return P.IO.fetchRemote(ASSET_URL + hash + '/get/')
-          .then((request) => request.arrayBuffer())
+        return new P.IO.ArrayBufferRequest(ASSET_URL + hash + '/get/').load()
           .then((buffer) => P.audio.decodeAudio(buffer));
       }
     } else {
@@ -1680,7 +1678,7 @@ namespace P.sb2.compiler {
 
         var id = label();
         source += 'if (!' + bool(block[1]) + ') {\n';
-        queue(id);
+        forceQueue(id);
         source += '}\n';
 
       } else if (block[0] === 'glideSecs:toX:y:elapsed:from:') {

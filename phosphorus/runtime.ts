@@ -1,11 +1,8 @@
 /// <reference path="phosphorus.ts" />
-/// <reference path="sb2.ts" />
 /// <reference path="core.ts" />
 /// <reference path="audio.ts" />
 
-// TODO: remove sb2 dependence
-
-// The phosphorus Scratch runtime
+// The phosphorus runtime for Scratch
 // Provides methods expected at runtime by scripts created by the compiler and an environment for Scratch scripts to run
 namespace P.runtime {
   export type Fn = () => void;
@@ -324,7 +321,7 @@ namespace P.runtime {
         case 'volume': return o.volume * 100;
       }
     }
-    const value = o.lookupVariable(attr);
+    const value = o.vars[attr];
     if (value !== undefined) {
       return value;
     }
@@ -718,6 +715,70 @@ namespace P.runtime {
     handleError(e) {
       // Default error handler
       console.error(e);
+    }
+  }
+
+  // Very dirty temporary hack to get a crashmonitor installed w/o affecting performance
+  if (P.config.useCrashMonitor) {
+    Runtime.prototype.step = function() {
+      // Reset runtime variables
+      self = this.stage;
+      runtime = this;
+      VISUAL = false;
+
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
+      const start = Date.now();
+      const queue = this.queue;
+      do {
+        this.now = this.rightNow();
+        for (THREAD = 0; THREAD < queue.length; THREAD++) {
+          const thread = queue[THREAD];
+          if (thread) {
+            // Load thread data
+            S = thread.sprite;
+            IMMEDIATE = thread.fn;
+            BASE = thread.base;
+            CALLS = thread.calls;
+            C = CALLS.pop();
+            STACK = C.stack;
+            R = STACK.pop();
+            queue[THREAD] = undefined;
+            WARP = 0;
+
+            while (IMMEDIATE) {
+              if (Date.now() - start > 5000) {
+                const el = document.createElement('pre');
+                el.textContent += 'crash monitor debug:\n';
+                el.textContent += `S: ${S.name} (isClone=${S.isClone},isStage=${S.isStage})\n`;
+                el.textContent += `IMMEDIATE: ${IMMEDIATE.toString()} // (${S.fns.indexOf(IMMEDIATE)})\n`;
+                document.querySelector('#app')!.appendChild(el);
+                alert('forkphorus has crashed. please include the debug information at the bottom of the page.')
+                this.pause();
+                this.stopAll();
+                return;
+              }
+              const fn = IMMEDIATE;
+              IMMEDIATE = null;
+              fn();
+            }
+
+            STACK.push(R);
+            CALLS.push(C);
+          }
+        }
+
+        // Remove empty elements in the queue list
+        for (let i = queue.length; i--;) {
+          if (!queue[i]) {
+            queue.splice(i, 1);
+          }
+        }
+      } while ((this.isTurbo || !VISUAL) && Date.now() - start < 1000 / this.framerate && queue.length);
+
+      this.stage.draw();
     }
   }
 
