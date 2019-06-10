@@ -975,14 +975,22 @@ namespace P.renderer {
     }
 
     spritesIntersect(spriteA: core.Base, otherSprites: core.Base[]) {
+      const isSimple = (sprite: core.Base) => {
+        if (P.core.isSprite(sprite)) {
+          return sprite.direction === 90 && sprite.scale === 1;
+        } else {
+          return true;
+        }
+      };
+
       const aData = spriteA.costumes[spriteA.currentCostumeIndex].imageData();
       const aBounds = spriteA.rotatedBounds();
+      const aSimple = isSimple(spriteA);
 
       for (var i = 0; i < otherSprites.length; i++) {
         const spriteB = otherSprites[i];
         if (!spriteB.visible) continue;
 
-        const bData = spriteB.costumes[spriteB.currentCostumeIndex].imageData();
         const bBounds = spriteB.rotatedBounds();
 
         if (bBounds.bottom >= aBounds.top || aBounds.bottom >= bBounds.top || bBounds.left >= aBounds.right || aBounds.left >= bBounds.right) {
@@ -994,51 +1002,60 @@ namespace P.renderer {
         const right = Math.min(aBounds.right, bBounds.right);
         const bottom = Math.max(aBounds.bottom, bBounds.bottom);
 
-        for (var x = left; x < right; x++) {
-          const ax = x - aBounds.left;
-          const bx = x - bBounds.left;
-          for (var y = bottom; y < top; y++) {
-            const ay = aBounds.top - y;
-            const by = bBounds.top - y;
-            const ap = Math.floor(ay * aData.width + ax);
-            const bp = Math.floor(by * bData.width + bx);
+        if (aSimple && isSimple(spriteB)) {
+          // This can be a very expensive operation, but only the first time.
+          const bData = spriteB.costumes[spriteB.currentCostumeIndex].imageData();
 
-            if (aData.data[Math.floor(ap * 4 - 1)] && bData.data[Math.floor(bp * 4 - 1)]) {
+          for (var x = left; x < right; x++) {
+            const ax = x - aBounds.left;
+            const bx = x - bBounds.left;
+            for (var y = bottom; y < top; y++) {
+              const ay = aBounds.top - y;
+              const by = bBounds.top - y;
+              const ap = Math.floor(ay * aData.width + ax);
+              const bp = Math.floor(by * bData.width + bx);
+
+              if (aData.data[ap * 4 - 1] && bData.data[bp * 4 - 1]) {
+                return true;
+              }
+            }
+          }
+        } else {
+          console.log('using slow collision');
+          debugger;
+
+          const width = right - left;
+          const height = top - bottom;
+
+          if (width < 1 || height < 1) {
+            continue;
+          }
+
+          workingRenderer.canvas.width = width;
+          workingRenderer.canvas.height = height;
+
+          workingRenderer.ctx.save();
+          workingRenderer.noEffects = true;
+
+          workingRenderer.ctx.translate(-(left + 240), -(180 - top));
+          workingRenderer.drawChild(spriteA);
+          workingRenderer.ctx.globalCompositeOperation = 'source-in';
+          workingRenderer.drawChild(spriteB);
+
+          workingRenderer.noEffects = false;
+          workingRenderer.ctx.restore();
+
+          const data = workingRenderer.ctx.getImageData(0, 0, width, height).data;
+          const length = data.length;
+
+          for (var j = 0; j < length; j += 4) {
+            // check for the opacity byte being a non-zero number
+            if (data[j + 3]) {
               return true;
             }
           }
         }
 
-        // const width = right - left;
-        // const height = top - bottom;
-
-        // if (width < 1 || height < 1) {
-        //   return false;
-        // }
-
-        // workingRenderer.canvas.width = width;
-        // workingRenderer.canvas.height = height;
-
-        // workingRenderer.ctx.save();
-        // workingRenderer.noEffects = true;
-
-        // workingRenderer.ctx.translate(-(left + 240), -(180 - top));
-        // workingRenderer.drawChild(spriteA);
-        // workingRenderer.ctx.globalCompositeOperation = 'source-in';
-        // workingRenderer.drawChild(spriteB);
-
-        // workingRenderer.noEffects = false;
-        // workingRenderer.ctx.restore();
-
-        // const data = workingRenderer.ctx.getImageData(0, 0, width, height).data;
-        // const length = data.length;
-
-        // for (var j = 0; j < length; j += 4) {
-        //   // check for the opacity byte being a non-zero number
-        //   if (data[j + 3]) {
-        //     return true;
-        //   }
-        // }
       }
       return false;
     }
