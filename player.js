@@ -90,11 +90,8 @@ P.Player = (function() {
 
   /**
    * Add controls to the player.
-   * @typedef ControlOptions
-   * @property {boolean} [showMutedIndicator]
-   * @param {ControlOptions} [options]
    */
-  Player.prototype.addControls = function(options) {
+  Player.prototype.addControls = function() {
     var clickStop = /** @param {MouseEvent} e */ function(e) {
       this.assertStage();
       this.pause();
@@ -148,7 +145,6 @@ P.Player = (function() {
     if (this.controlsEl) {
       throw new Error('This player already has controls.');
     }
-    options = options || {};
 
     this.controlsEl = document.createElement('div');
     this.controlsEl.className = 'player-controls';
@@ -175,19 +171,6 @@ P.Player = (function() {
     this.fullscreenButton.className = 'player-button player-fullscreen-btn';
     this.fullscreenButton.title = P.i18n.translate('player.controls.fullscreen.title');
     this.controlsEl.appendChild(this.fullscreenButton);
-
-    if (options.showMutedIndicator && P.audio.context) {
-      this.mutedText = document.createElement('div');
-      this.mutedText.innerText = P.i18n.translate('player.controls.muted');
-      this.mutedText.title = P.i18n.translate('player.controls.muted.title');
-      this.mutedText.className = 'player-label player-muted';
-      this.controlsEl.appendChild(this.mutedText);
-
-      P.audio.context.addEventListener('statechange', function() {
-        this.root.setAttribute('audio-state', P.audio.context.state);
-      }.bind(this));
-      this.root.setAttribute('audio-state', P.audio.context.state);
-    }
 
     this.stopButton.addEventListener('click', clickStop);
     this.pauseButton.addEventListener('click', clickPause);
