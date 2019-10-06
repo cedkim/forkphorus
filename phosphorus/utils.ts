@@ -87,5 +87,13 @@ namespace P.utils {
         listener(value);
       }
     }
+
+    unsubscribe(fn: SlotFn<T>) {
+      const index = this._listeners.indexOf(fn);
+      if (index === -1) {
+        throw new Error('Cannot unsubscribe if not subscribed to begin with');
+      }
+      this._listeners.splice(index, 1);
+    }
   }
 }

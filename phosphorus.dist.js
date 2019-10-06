@@ -3696,6 +3696,13 @@ var P;
                     listener(value);
                 }
             }
+            unsubscribe(fn) {
+                const index = this._listeners.indexOf(fn);
+                if (index === -1) {
+                    throw new Error('Cannot unsubscribe if not subscribed to begin with');
+                }
+                this._listeners.splice(index, 1);
+            }
         }
         utils.Slot = Slot;
     })(utils = P.utils || (P.utils = {}));
