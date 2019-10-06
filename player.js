@@ -264,6 +264,30 @@ P.Player = (function() {
     this.onthemechange.emit(theme);
   };
 
+  Player.prototype.showClickToPlay = function() {
+    var checkShouldHide = function() {
+      if (P.audio.context.state !== 'suspended') {
+        this.stage.runtime.triggerGreenFlag();
+        this.stage.ui.removeChild(el);
+        this.onaudiostatechange.unsubscribe(checkShouldHide);
+        el.removeEventListener('click', checkShouldHide);
+      }
+    }.bind(this);
+
+    var el = document.createElement('div');
+    el.className = 'player-click-to-play';
+
+    var content = document.createElement('div');
+    content.className = 'player-click-to-play-content';
+    content.textContent = 'Eventually there will be an actual icon here or something like that';
+    el.appendChild(content);
+
+    this.onaudiostatechange.subscribe(checkShouldHide);
+    el.addEventListener('click', checkShouldHide);
+
+    this.stage.ui.appendChild(el);
+  };
+
   /**
    * Enters fullscreen
    * @param {boolean} realFullscreen Whether we should request full fullscreen that takes the entire monitor, instead of just the page.
@@ -413,15 +437,19 @@ P.Player = (function() {
     if (!stage) {
       throw new Error('Invalid stage.');
     }
+    stageOptions = stageOptions || {};
     this.stage = stage;
     stage.runtime.handleError = this.handleError.bind(this);
     this.player.appendChild(stage.root);
     stage.focus();
     this.onload.emit(stage);
     this.start();
-    stageOptions = stageOptions || {};
     if (stageOptions.start !== false) {
-      stage.runtime.triggerGreenFlag();
+      if (P.audio.context && P.audio.context.state === 'suspended') {
+        this.showClickToPlay();
+      } else {
+        stage.runtime.triggerGreenFlag();
+      }
     }
     if (stageOptions.turbo) {
       stage.runtime.isTurbo = true;

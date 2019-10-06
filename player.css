@@ -111,14 +111,6 @@
 .player-root[turbo] .player-turbo {
   display: block;
 }
-.player-controls .player-muted {
-  float: left;
-  cursor: pointer;
-  display: none;
-}
-.player-controls .player-muted:hover {
-  text-decoration: underline;
-}
 @keyframes player-appear {
   from {
     visibility: hidden;
@@ -169,4 +161,25 @@
   top: 0;
   left: 0;
   z-index: -1;
+}
+
+.player-click-to-play {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  cursor: pointer;
+}
+.player-click-to-play-content {
+  width: 10em;
+  height: 10em;
+  border-radius: 100%;
+  background: #fff;
 }
