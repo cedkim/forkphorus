@@ -25,10 +25,15 @@ P.Player = (function() {
     this.onerror = new P.utils.Slot();
     this.onstart = new P.utils.Slot();
     this.onpause = new P.utils.Slot();
+    this.onaudiostatechange = new P.utils.Slot();
 
     this.root = document.createElement('div');
     this.root.className = 'player-root';
     this.setTheme(options.theme || 'light');
+
+    P.audio.context.addEventListener('statechange', function() {
+      this.onaudiostatechange.emit(P.audio.context.state);
+    }.bind(this));
 
     this.player = document.createElement('div');
     this.player.className = 'player-stage';
