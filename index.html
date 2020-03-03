@@ -76,6 +76,7 @@
             <input id="embed-other-width" type="number" value="960" disabled min="1">
             <span class="package-other-divider" data-i18n="index.package.divider">&times;</span>
             <input id="embed-other-height" type="number" value="720" disabled min="1">
+            <a id="embed-alternative" target="_blank">Code doesn't work?</a>
           </span>
         </p>
       </section>
@@ -421,6 +422,7 @@
     var embedOther = querySelector('#embed-other');
     var embedOtherWidth = querySelector('#embed-other-width');
     var embedOtherHeight = querySelector('#embed-other-height');
+    var embedAlternative = querySelector('#embed-alternative');
 
     function updateEmbedCode(e) {
       // Hide UI replaces other options.
@@ -451,6 +453,8 @@
       } else {
         embedCode.value = '';
       }
+
+      embedAlternative.href = 'alternativeembed.html#' + embedCode.value;
 
       if (e) {
         selectEmbedCode();

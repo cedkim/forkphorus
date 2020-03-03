@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>forkphorus embed</title>
+    <title>forkphorus embed fixer</title>
     <meta name="robots" content="noindex">
-    <style>
-      iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
-    </style>
   </head>
   <body>
+
+    <p>Does the embed script not work for you? Try this alternative version:</p>
+
+    <input readonly type="text" id="embed">
+
+    <p>This is a temporary hack to fix issues with certain sites.</p>
+
+    <iframe src="http://localhost:8080/embed.html?id=357143074&auto-start=true&light-content=false&w=480&h=360" allowfullcreen="true" allowtransparency="true" style="border: none;" width="482" height="393"></iframe>
+
     <script>
       (function() {
         'use strict';
@@ -46,21 +48,17 @@
           }
         });
 
-        var iframe = document.createElement('iframe');
-        iframe.setAttribute('allowfullscreen', true);
-        iframe.setAttribute('allowtransparency', true);
-        iframe.src = src.replace('embed.js', 'embed.html');
-        iframe.style.border = '0';
+        var frame = '<iframe src="' + src.replace('embed.js', 'embed.html') + '" allowfullcreen="true" allowtransparency="true" style="border: none;"';
 
         if (hasUI) {
-          iframe.width = width + 2;
-          iframe.height = height + 33;
-        } else {
-          iframe.width = width;
-          iframe.height = height;
+          width = width + 2;
+          height = height + 33;
         }
+        frame += ' width="' + width + '"';
+        frame += ' height="' + height + '"';
+        frame += '></iframe>';
 
-        document.body.appendChild(iframe);
+        document.getElementById('embed').value = frame;
 
       }());
     </script>
